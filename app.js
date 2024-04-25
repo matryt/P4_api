@@ -18,8 +18,7 @@ mongoose.connect(`mongodb+srv://matryt:${process.env.MONGODB_PASSWORD}!@cluster1
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+
 
 app.use(logger('dev'));
 app.use(express.json());
