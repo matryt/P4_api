@@ -19,7 +19,7 @@ mongoose.connect(`mongodb+srv://matryt:${process.env.MONGODB_PASSWORD}@cluster1.
 
 // view engine setup
 
- 
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
