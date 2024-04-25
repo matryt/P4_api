@@ -13,13 +13,13 @@ let gamesRouter = require("./routes/game")
 
 let app = express();
 
-mongoose.connect(`mongodb+srv://matryt:${process.env.MONGODB_PASSWORD}!@cluster1.ru2wdaz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1`)
+mongoose.connect(`mongodb+srv://matryt:${process.env.MONGODB_PASSWORD}@cluster1.ru2wdaz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1`)
     .then(() => console.log('Connexion à MongoDB réussie !'))
-    .catch(() => console.log('Connexion à MongoDB échouée !'));
+    .catch((e) => console.log(e.message));
 
 // view engine setup
 
-
+ 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
