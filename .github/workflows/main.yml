@@ -1,4 +1,4 @@
-name: Automated API tests using Postman CLI
+name: All tests
 
 on: push
 
@@ -15,3 +15,21 @@ jobs:
       - name: Run API tests
         run: |
           postman collection run "34426977-14898711-bd3e-4d36-859d-42b52ba84685" -e "34426977-a11cdabc-66a5-441a-84c1-f9f1ea797f6f" --env-var "url=https://p4-api.onrender.com"
+
+  logic-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm install
+    - run: npm run build --if-present
+    - run: npm test
