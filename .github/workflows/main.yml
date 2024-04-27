@@ -14,4 +14,4 @@ jobs:
         run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
       - name: Run API tests
         run: |
-          postman collection run "34426977-14898711-bd3e-4d36-859d-42b52ba84685" -e "34426977-a11cdabc-66a5-441a-84c1-f9f1ea797f6f"
+          postman collection run "34426977-14898711-bd3e-4d36-859d-42b52ba84685" -e "34426977-a11cdabc-66a5-441a-84c1-f9f1ea797f6f" --env-var "url=https://p4-api.onrender.com"
