@@ -166,15 +166,17 @@ exports.undoLastPiece = async (req, res, next) => {
         let g = await Game.findById(
             req.params.id
         );
-        if (g.isFinished) res.status(400).json({ok: false, error_ID:"FIN"});
-        else {
-            let index = g.isFirstTurn ? 1 : 0;
-            g.isFirstTurn = !g.isFirstTurn;
-            g.pieces[index].pop();
-            g.markModified('pieces');
-            await g.save();
-            res.status(200).json({ok: true, message: "Last piece removed !"});
-        }
+        if (g.isFinished) {
+          res.status(400).json({ok: false, error_ID:"FIN"});
+        } else {
+                    let index = g.isFirstTurn ? 1 : 0;
+                    g.isFirstTurn = !g.isFirstTurn;
+                    g.pieces[index].pop();
+                    g.markModified('pieces');
+                    await g.save();
+                    res.status(200).json({ok: true, message: "Last piece removed !"});
+                }
+
     } catch (e) {
         res.status(400).json({
             ok: false,
@@ -188,17 +190,19 @@ exports.addPlayer = async (req, res, next) => {
         let g = await Game.findById(
             req.params.id
         );
-        if (g.isFinished) res.status(400).json({ok: false, error_ID:"FIN"});
-        else {
-            if (g.players.length > 1) {
-                res.status(400).json({ok: false, error_ID: "ALREADY_FOUND"});
-                return;
-            }
-            g.players.push(req.body.players);
-            g.markModified('players');
-            await g.save();
-            res.status(200).json({ok: true, message: "Player added !"});
-        }
+        if (g.isFinished) {
+          res.status(400).json({ok: false, error_ID:"FIN"});
+        } else {
+                    if (g.players.length > 1) {
+                        res.status(400).json({ok: false, error_ID: "ALREADY_FOUND"});
+                        return;
+                    }
+                    g.players.push(req.body.players);
+                    g.markModified('players');
+                    await g.save();
+                    res.status(200).json({ok: true, message: "Player added !"});
+                }
+
     } catch (e) {
         res.status(400).json({
             ok: false,
@@ -211,7 +215,7 @@ exports.findGame = async (req, res, next) => {
     let ids = [];
     let games = await Game.find();
     for (let game of games) {
-        if (game.players.length < 2) ids.push(game.id);
+        if (game.players.length < 2) {
     }
     res.status(200).json({
         ok: true,
