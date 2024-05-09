@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+const userMethods = require('../controllers/user');
+
+router.post('/signup', userMethods.signup);
+router.get('/signin', async (req, res, next) => await userMethods.signin(req, res, next));
 
 module.exports = router;
