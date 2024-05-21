@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Game = require("../models/Game");
 
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10, (error, hash) => {
@@ -33,7 +34,7 @@ exports.signup = (req, res, next) => {
 exports.signin = async (req, res, next) => {
     try {
         let user = await User.findOne({email: req.body.email});
-        if (!e) {
+        if (!user) {
             res.status(418).json({
                 ok: false,
                 error: "Utilisateur inconnu !"
@@ -56,6 +57,7 @@ exports.signin = async (req, res, next) => {
                     {
                         lastName: user.lastName,
                         userId: user._id,
+                        admin: user.admin
                     },
                     process.env.JWT_SECRET,
                     {expiresIn: '24h'}
@@ -70,3 +72,18 @@ exports.signin = async (req, res, next) => {
     }
 
 }
+
+exports.delete = async (req, res, next) => {
+    try {
+        let user = await User.deleteOne({email: req.body.email});
+        res.status(200).json({
+            ok: true,
+        })
+    } catch (e) {
+        res.status(400).json({
+            ok: false,
+            error: e.message
+        })
+    }
+}
+

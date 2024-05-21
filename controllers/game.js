@@ -1,5 +1,9 @@
+
 const Game = require("../models/Game")
 const gameLogic = require("../gameLogic/main");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+const {verifyAdminAuth} = require("../middleware/auth");
 
 exports.getAllGames = (req, res, next) => {
     Game.find()
@@ -7,10 +11,17 @@ exports.getAllGames = (req, res, next) => {
         .catch(error => res.status(400).json({ok: false, error: error.message}));
 }
 
-exports.createGame = (req, res, next) => {
+exports.createGame = async (req, res, next) => {
+    if (!gameLogic.verifyAdminAuth(req) && await gameLogic.existsGame(gameLogic.getIdWithBearer(gameLogic.getBearer(req)))) {
+        res.status(400).json({
+            ok: false,
+            "message": "Vous avez déjà une partie en cours !"
+        });
+        return;
+    }
     const game = new Game({
         time: req.body.time,
-        players: req.body.players,
+        players: [gameLogic.getIdWithBearer(gameLogic.getBearer(req))],
         pieces: req.body.pieces
     });
     game.save().then(
@@ -132,10 +143,17 @@ exports.getGame = (req, res, next) => {
         {_id: req.params.id}
     ).then(
         (g) => {
-            res.status(200).json({
-                ok: true,
-                game: g,
-            })
+            if (!g) {
+                res.status(400).json({
+                    ok: false,
+                })
+            }
+            else {
+                res.status(200).json({
+                    ok: true,
+                    game: g,
+                })
+            }
         }
     ).catch(
         (e) => res.status(400).json({
@@ -194,7 +212,7 @@ exports.addPlayer = async (req, res, next) => {
                 res.status(400).json({ok: false, error_ID: "ALREADY_FOUND"});
                 return;
             }
-            g.players.push(req.body.players);
+            g.players.push(gameLogic.getIdWithBearer(gameLogic.getBearer(req)));
             g.markModified('players');
             await g.save();
             res.status(200).json({ok: true, message: "Player added !"});
@@ -218,3 +236,28 @@ exports.findGame = async (req, res, next) => {
         IDs: ids
     })
 }
+
+exports.canStart = (req, res, next) => {
+    Game.findOne(
+        {_id: req.params.id}
+    ).then(
+        (g) => {
+            if (!g) {
+                res.status(400).json({
+                    ok: false,
+                })
+            }
+            else {
+                res.status(200).json({
+                    ok: true,
+                    possible: g.players.length === 2,
+                })
+            }
+        }
+    ).catch(
+        (e) => res.status(400).json({
+            ok: false,
+            error: e.message})
+    );
+}
+

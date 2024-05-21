@@ -1,3 +1,6 @@
+const jwt = require("jsonwebtoken");
+const Game = require("../models/Game");
+
 function buildArray(positions) {
     let tableau = Array.from({ length: 6 }, () => Array(7).fill(""));
     let characters = ["*", "o"];
@@ -66,4 +69,44 @@ function verifyColumns(positions) {
     return false;
 }
 
+function getBearer(req) {
+    return req.headers.authorization.split('Bearer ')[1];
+}
+
+function getIdWithBearer(bearer) {
+    try {
+        const decodedToken = jwt.verify(bearer, process.env.JWT_SECRET);
+        return decodedToken.userId;
+    } catch(error) {
+        return false;
+    }
+}
+
+async function existsGame(userId) {
+    try {
+        const games = await Game.find({});
+        for (let game of games) {
+            if (game.players.includes(userId)) return true;
+        }
+        return false;
+    } catch (error) {
+        return false;
+    }
+}
+
+function verifyAdminAuth(req) {
+    try {
+        const token = req.headers.authorization.split('Bearer ')[1];
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        if (!(decodedToken.admin)) return false;
+        return true;
+    } catch(error) {
+        return false;
+    }
+}
+
+exports.existsGame = existsGame;
 exports.isFinished = isFinished;
+exports.getBearer = getBearer;
+exports.getIdWithBearer = getIdWithBearer;
+exports.verifyAdminAuth = verifyAdminAuth;
