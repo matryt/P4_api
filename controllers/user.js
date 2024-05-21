@@ -1,7 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const Game = require("../models/Game");
 
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10, (error, hash) => {
@@ -75,7 +74,7 @@ exports.signin = async (req, res, next) => {
 
 exports.delete = async (req, res, next) => {
     try {
-        let user = await User.deleteOne({email: req.body.email});
+        await User.deleteOne({email: req.body.email});
         res.status(200).json({
             ok: true,
         })

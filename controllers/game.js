@@ -1,9 +1,6 @@
 
 const Game = require("../models/Game")
 const gameLogic = require("../gameLogic/main");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-const {verifyAdminAuth} = require("../middleware/auth");
 
 exports.getAllGames = (req, res, next) => {
     Game.find()
@@ -88,7 +85,6 @@ exports.placePiece = async (req, res, next) => {
                     ok: false,
                     error_ID: "EXISTS"
                 });
-                return;
             }
             else {
                 g.pieces[index].push(req.body.piece);
@@ -169,7 +165,7 @@ exports.hasChanged = (req, res, next) => {
         (g) => {
             res.status(200).json({
                 ok: true,
-                hasChanged: req.body.modifs != g.modifs,
+                hasChanged: req.body.modifs !== g.modifs,
             })
         }
     ).catch(
